@@ -38,14 +38,15 @@ beforeEach(async () => {
 
 
   /**
-   * Fetch the first campaign address since that will be the one we just created, since that is the only
-   * contract we've deployed so far.
+   * We dont get the campagin address from the createCampaign method, therefore we
+   * have to fetch the deployedContracts. Since we only have deployed one contract
+   * so far we can just use the first contract.
    */
   [campaignAddress] = await factory.methods.getDeployedCampaigns().call()
 
 
   /**
-   * Create the campaign model (from the blockchain)
+   * Create the campaign model (using the interface and the address)
    */
   campaign = new web3.eth.Contract(
     JSON.parse(compiledCampaign.interface),
@@ -63,4 +64,3 @@ describe('Campaigns', () => {
     assert.ok(campaign.options.address)
   })
 })
-
