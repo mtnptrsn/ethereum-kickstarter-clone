@@ -63,4 +63,87 @@ describe('Campaigns', () => {
     assert.ok(factory.options.address)
     assert.ok(campaign.options.address)
   })
+
+  it('marks the caller as the manager', async () => {
+    const manager = await campaign.methods.manager().call()
+
+    assert.equal(accounts[0], manager)
+  })
+
+  it('allows people to contribute and marks them as a contributor', async () => {
+    await campaign.methods.contribute().send({
+      from: accounts[1] ,
+      value: '1000'
+    })
+
+    const isContributor = await campaign.methods.approvers(accounts[1]).call()
+
+    assert(isContributor)
+  })
+
+  it('requires a minium contribution', async () => {
+    try {
+      await campaign.methods.contribute().send({
+        from: accounts[0],
+        value: '1'
+      })
+      assert(false)
+    } catch (error) {
+      assert(error)
+    }
+  })
+
+  it('allows a manager to make a payment request', async () => {
+    const description = 'My only request'
+
+    await campaign.methods.createRequest(
+      description,
+      '100',
+      accounts[1]
+    ).send({
+      from: accounts[0],
+      gas: '1000000'
+    })
+
+    const firstRequest = await campaign.methods.requests(0).call()
+
+    assert.equal(description, firstRequest.description)
+  })
+
+  it('processes a request', async () => {
+    await campaign.methods.contribute().send({
+      from: accounts[1],
+      value: web3.utils.toWei('10', 'ether')
+    })
+
+    await campaign.methods.createRequest(
+      'My description',
+      web3.utils.toWei('10', 'ether'),
+      accounts[2]
+    ).send({
+      from: accounts[0],
+      gas: '1000000'
+    })
+
+    await campaign.methods.approveRequest(0).send({
+      from: accounts[1],
+      gas: '1000000'
+    })
+
+    const recipientsBalanceBeforeFinalizingRequest =
+      await web3.eth.getBalance(accounts[2])
+
+    await campaign.methods.finalizeRequest(0).send({
+      from: accounts[0],
+      gas: '1000000'
+    })
+
+    const recipientsBalanceAfterFinalizingRequest =
+      await web3.eth.getBalance(accounts[2])
+
+    const request = await campaign.methods.requests(0).call()
+
+    assert(request.complete)
+    assert(recipientsBalanceBeforeFinalizingRequest < recipientsBalanceAfterFinalizingRequest)
+  })
 })
