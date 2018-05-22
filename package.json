@@ -11,7 +11,12 @@
     "fs-extra": "^6.0.1",
     "ganache-cli": "^6.1.0",
     "mocha": "^5.2.0",
+    "next": "4.1.4",
+    "next-routes": "^1.4.2",
     "ramda": "^0.25.0",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
+    "semantic-ui-react": "^0.80.0",
     "solc": "^0.4.24",
     "truffle-hdwallet-provider": "0.0.3",
     "web3": "1.0.0-beta.26"
@@ -21,6 +26,7 @@
     "watch:test": "nodemon --watch . --exec 'mocha'",
     "build:contracts": "node ./ethereum/compile.js",
     "watch:contracts": "nodemon ./ethereum/compile.js",
-    "deploy": "node ./ethereum/deploy"
+    "deploy": "node ./ethereum/deploy",
+    "dev": "next dev"
   }
 }
