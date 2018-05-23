@@ -2,6 +2,7 @@ import React from 'react';
 import factory from '../ethereum/factory'
 import { Card, Button } from 'semantic-ui-react'
 import Layout from '../components/Layout'
+import { Link } from '../routes'
 
 class IndexPage extends React.Component {
   static async getInitialProps({ req }) {
@@ -17,9 +18,9 @@ class IndexPage extends React.Component {
   }
 
   renderCampaigns = () => {
-    const items = this.props.campaigns.map(c => ({
-      header: c,
-      description: <a>View campaign</a>,
+    const items = this.props.campaigns.map(address => ({
+      header: address,
+      description: <Link route={`/campaigns/${address}`}><a>View campaign</a></Link>,
       fluid: true
     }))
 
@@ -30,12 +31,16 @@ class IndexPage extends React.Component {
     return (
       <Layout>
         <h3>Open campaigns</h3>
-        <Button
-          content="Create campaign"
-          icon="add circle"
-          primary
-          floated="right"
-        />
+        <Link route="/campaigns/new">
+          <a>
+            <Button
+              content="Create campaign"
+              icon="add circle"
+              primary
+              floated="right"
+            />
+          </a>
+        </Link>
         { this.renderCampaigns() }
       </Layout>
     )
